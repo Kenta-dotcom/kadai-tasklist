@@ -1,9 +1,9 @@
 package controllers;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,16 +14,16 @@ import models.Task;
 import utils.DBUtil;
 
 /**
- * Servlet implementation class IndexServlet
+ * Servlet implementation class ShowServlet
  */
-@WebServlet("/index")
-public class IndexServlet extends HttpServlet {
+@WebServlet("/show")
+public class ShowServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public IndexServlet() {
+    public ShowServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,21 +32,21 @@ public class IndexServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // EntityManagerのオブジェクトを生成
+        // EntityManagerのオブジェクトを生成する
         EntityManager em = DBUtil.createEntityManager();
 
-        List<Task> tasks = em.createNamedQuery("getAllTasks", Task.class)
-                                   .getResultList();
+        // 該当のIDのタスク1件のみをDBから取得
+        Task t = em.find(Task.class, Integer.parseInt(request.getParameter("id")));
 
-        response.getWriter().append(Integer.valueOf(tasks.size()).toString());
         // EntityManagerの利用を終了する
         em.close();
 
-        /*// リクエストスコープ
-        request.setAttribute("tasks", tasks);
+        // タスクデータをリクエストスコープにセットしてshow.jspを呼び出す
+        request.setAttribute("task", t);
 
-        // ビューとなるindex.jspを呼び出す
-        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/index.jsp");
-        rd.forward(request, response);*/
+        // ビューとなるshow.jspを呼び出す
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/show.jsp");
+        rd.forward(request, response);
     }
+
 }

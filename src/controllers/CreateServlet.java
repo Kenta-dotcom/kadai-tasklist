@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import models.Message;
+import models.Task;
 import utils.DBUtil;
 
 /**
@@ -34,9 +34,10 @@ public class CreateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String _token = (String)request.getParameter("_token");
         if(_token != null && _token.equals(request.getSession().getId())) {
+            // EntityManagerのオブジェクトを生成
             EntityManager em = DBUtil.createEntityManager();
 
-            Message m = new Message();
+            Task m = new Task();
 
             String content = request.getParameter("content");
             m.setContent(content);
@@ -48,6 +49,7 @@ public class CreateServlet extends HttpServlet {
             em.getTransaction().begin();
             em.persist(m);
             em.getTransaction().commit();
+            // EntityManagerの利用を終了する
             em.close();
 
             // リダイレクト
